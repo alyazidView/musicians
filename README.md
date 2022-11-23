@@ -1,5 +1,5 @@
 # **Misk Data Science Immersive**
-Assignment: Group Assignment #3 - Music Genre Classification
+Assignment: Group Assignment #3 - Music Genre Classification [Machine Learning]
 
 [Report]() (offline)
 
