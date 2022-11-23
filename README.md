@@ -12,7 +12,7 @@ Assignment: Group Assignment #3 - Music Genre Classification
 ### [**Music Genre Classification**](https://www.kaggle.com/datasets/purumalgi/music-genre-classification)
 - “Inside Airbnb is a mission driven project that provides data and advocacy about Airbnb's impact on residential communities. We work towards a vision where data and information empower communities to understand, decide and control the role of renting residential homes to tourists”
 
-###&ensp;**Content**
+### &ensp;**Content**
 
 &emsp;**Training dataset:** 17,996 rows with 17 columns
 
