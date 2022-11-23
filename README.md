@@ -25,7 +25,7 @@ Assignment: Group Assignment #3 - Music Genre Classification
 
 - **Test dataset:** 7,713 rows with 16 columns
 
-### Acknowledgements
+## Acknowledgements
 
 The entire credit goes to MachineHack where different hackathons are hosted for practice and learning.
 
