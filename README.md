@@ -37,7 +37,7 @@ The entire credit goes to MachineHack where different hackathons are hosted for 
 
 - [Alyazid Alhumaydani](https://github.com/alyazidView)
 - [Ibrahim Alghrabi](https://github.com/ibrahim-g7)
-- [Quseas Saif](https://github.com/Qusea)
+- [Qusea Saif](https://github.com/Qusea)
 - [Razan Sendi](https://github.com/RazanSendi)
 
 
