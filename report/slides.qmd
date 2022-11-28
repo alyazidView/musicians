@@ -1,0 +1,355 @@
+---
+title: "Music Genre Classification"
+format: 
+    revealjs: 
+        theme: serif
+excute:
+    echo: false
+    eval: true
+author: 
+- Alyazid Alhumaydani
+- Razan Sendi
+- Qusea Saif
+- Ibrahim Alghrabi
+---
+
+# Outline
+
+- Introduction.
+- About the Dataset.
+- Data Imputing.
+- Additional Attributes.
+- Model Training.
+- Hyperparameter Tuning.
+- Conclusion.
+
+# Introduction
+
+- Since the beginning of time, music has played a significant role in our lives. 
+- Music is a subjective art because every musician has an own style. 
+- Currently, a lot of music aggregator apps use machine learning to drive their playlist curation and recommendation engines. 
+- In this work, we will develop a ML model to predict the class of the music.
+
+# About the Dataset
+
+- The dataset was obtained from one of **MachineHack** Hackathon.
+- The dataset provide the characterstic of a song, and their corresponding artist.
+
+# Notable Variables
+|Column Details|
+|:-----:|:---:|:---:|
+|Artist Name|Track Name| Popularity|
+|Danceability|Energy|Key|
+|Loudness|Mode|Speechiness|
+|Acousticness|Instrumentalness|duration in ms|
+|liveness|valence|tempo|
+
+# Reading the Data:{.smaller}
+```{python}
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+
+# import libraies 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.express as px
+import seaborn as sns 
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split, KFold, RandomizedSearchCV
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
+from catboost import CatBoostClassifier
+from dataprep.eda import create_report
+from imblearn.over_sampling import SMOTE
+import xgboost as xgb
+from xgboost import XGBClassifier
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score,f1_score,recall_score,precision_score,classification_report
+from lightgbm import LGBMClassifier
+from scipy.stats import randint as sp_randint
+from scipy.stats import uniform as sp_uniform
+raw_data = pd.read_csv('../data/train.csv')
+```
+
+- Here a sample of the dataset
+```{python}
+raw_data.head(3)
+```
+
+
+```{python}
+raw_data.info()
+```
+- The data has 17996 rows, and 17 columns
+- Artist Name, and Track Name are of type str, while the rest are numerical variables.
+- Although Class is a continous variable, it should be treated as Categorical.
+
+# Data Imputing:{.smaller}
+- Lets see the missing values.
+```{python}
+raw_data.isnull().sum()
+```
+# Data Imputing
+- To deal with the missing value, we will replace them using the mean of the column it belongs to. 
+```{python}
+#| echo: true
+df = raw_data
+df['Popularity'].fillna(raw_data['Popularity'].mean(), inplace=True) 
+df['key'].fillna(raw_data['key'].mean(), inplace=True)  
+df['instrumentalness'].fillna(raw_data['instrumentalness'].mean(), inplace=True) 
+```
+
+
+# Additional Attributes
+- We will define new attributes: 
+
+```{python}
+#| echo: true
+df['Artist_Length'] = df['Artist Name'].apply(len) 
+df['Artist_Char_Count'] = df['Artist Name'].str.split().str.len()     
+df['Track_Length'] = df['Track Name'].apply(len)   
+df['Track_Char_Count'] = df['Track Name'].str.split().str.len() 
+df['Track_Digit'] = df['Track Name'].str.findall(r'[0-9]').str.len() 
+```
+
+# Additional Atrributes
+```{python}
+#| echo: true
+df['Track_in_min']= df['duration_in min/ms']/60000
+df['danceability_by_artist']= df.groupby(['Artist Name'])['danceability'].transform('mean')
+df['energy_by_artist']= df.groupby(['Artist Name'])['energy'].transform('mean')
+df['loudness_by_artist']= df.groupby(['Artist Name'])['loudness'].transform('mean')
+df['acousticness_by_artist']= df.groupby(['Artist Name'])['acousticness'].transform('mean')
+```
+
+# Label Encoder 
+- Encoding the categorical values using Label Encoder:
+```{python}
+#| echo: true
+encoder = LabelEncoder()
+
+# Enconding artist name
+df['Artist Name'] = encoder.fit_transform(df['Artist Name'])
+
+# Encoding track name
+df['Track Name'] = encoder.fit_transform(df['Track Name'])
+```
+
+# Data Splitting & Standarize numerical features.
+```{python}
+#| echo: true
+def scale_features(X_train, X_test):
+    scaler = StandardScaler().fit(X_train)
+    Xtrain = scaler.transform(X_train)
+    Xtest = scaler.transform(X_test)
+    return Xtrain, Xtest
+
+X = df.drop('Class', axis=1)
+y = df[['Class']]
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+random_state=0, shuffle=True)
+
+X_train_norm,X_test_norm=scale_features(X_train, X_test)
+```
+
+# Model Training
+
+- Model training without over sampling.
+- Model training with over sampling.
+
+## Models used:
+- LightGBM.
+- Logistic Regression.
+- K-Nearest Neighbor.
+- Multi-Layer-Perceptron.
+- Random Forest.
+- Support Vector Machine.
+
+## Model Training (w/o over sampling)
+
+- LGBM Accuracy Score: **0.59**
+- Logistic Regression Accuracy Score: **0.53**
+- K-Nearest Neighbor Accuracy Score: **0.46**
+- Multi-Layer-Perceptron Accuracy Score: **0.55**
+- Random Forest Accuracy Score: **0.56**
+- Support Vector Machine Accuracy Score: **0.57**
+
+## Model Training (with over sampling):{.smaller}
+
+- Class distribution.
+```{python}
+fig = px.histogram(
+    df, 
+    x='Class',
+    title="Class Distribution",
+    template="ggplot2",
+)
+fig.update_layout(yaxis_title="Count")
+fig.show()
+```
+
+## Model Training (with over sampling) SMOTE:
+- To balance the dataset, we will use SMOTE technique 
+
+```{python}
+#| echo: true
+#| eval: false
+X = df.drop('Class', axis=1)
+y = df[['Class']]
+X_train_norm,X_test_norm=scale_features(X_train, X_test)
+
+oversample = SMOTE()
+X_over, y_over = oversample.fit_resample(X, y)
+
+X_train, X_test, y_train, y_test = train_test_split(X_over , y_over ,
+test_size=0.2, random_state=42, shuffle=True )
+```
+## Model Training (with over sampling)
+
+- LGBM Accuracy Score: **0.8**
+- Logistic Regression Accuracy Score: **0.65**
+- K-Nearest Neighbor Accuracy Score: **0.75**
+- Multi-Layer-Perceptron Accuracy Score: **0.74**
+- Random Forest Accuracy Score: **0.8**
+- Support Vector Machine Accuracy Score: **0.74**
+
+# Hyperparameter Tuning:{.smaller}
+- Define tuning function:
+```{python}
+#| echo: true
+#| eval: false
+def parameter_tuning(model, hyper_parameter_grid, X_train, y_train ,X_test,y_test):
+  # Initialising grid search
+  grid = RandomizedSearchCV(estimator=model,
+                      param_distributions =  hyper_parameter_grid,
+                      scoring='accuracy',
+                      verbose=2,
+                      cv = 2,
+                      n_jobs=-1
+                      )
+  
+  # Inputing the data onto the grid search
+  result = grid.fit(X_train, y_train)
+
+  # Displaying the best score with its corrsponding parameters
+  print('Best Score: ', result.best_score_)
+  print('Best Params: ', result.best_params_)
+  print('Best Estimator: ',result.best_estimator_)
+  prediction = result.predict(X_test)
+  Performance_Metrics(y_test,prediction)
+```
+## LGBM:{.smaller}
+```{python}
+#| echo: true
+#| eval: false
+
+lg_param_test ={'num_leaves': sp_randint(2, 40), 
+             'min_child_samples': sp_randint(100, 500), 
+             'min_child_weight': [1e-5, 1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3, 1e4],
+             'subsample': sp_uniform(loc=0.2, scale=0.8), 
+             'colsample_bytree': sp_uniform(loc=0.4, scale=0.6),
+             'reg_alpha': [0, 1e-1, 1, 2, 5, 7, 10, 50, 100],
+             'reg_lambda': [0, 1e-1, 1, 5, 10, 20, 50, 100]}
+
+lg = LGBMClassifier()
+parameter_tuning(lg, lg_param_test, X_train_norm, y_train ,X_test_norm,y_test)
+```
+PERFORMANCE METRICS:
+
+- Accuracy: 79.13299044819986
+- F1 score: 78.66740817965271
+- Recall: 79.13299044819986
+- Precision: 78.52104237245331
+
+
+## SVM:{.smaller}
+```{python}
+#| echo: true
+#| eval: false
+svm_param_grid = {'C': [0.1,1, 10, 100], 
+              'gamma': [1,0.1,0.01,0.001],
+              'kernel': ['rbf', 'poly', 'sigmoid']}
+
+svm_model = SVC()
+parameter_tuning(svm_model , svm_param_grid, X_train_norm, y_train ,X_test_norm,y_test)
+```
+
+PERFORMANCE METRICS:
+
+- Accuracy: 80.18001469507715
+- F1 score: 79.8720837760752
+- Recall: 80.18001469507715
+- Precision: 79.79445417200164
+
+
+## KNN:{.smaller}
+```{python}
+#| echo: true
+#| eval: false
+parameters = { 'n_neighbors' : [3,5,7,9,11,13,15],
+               'metric' : ['minkowski','euclidean','manhattan']}
+neigh = KNeighborsClassifier()
+grid_neigh = GridSearchCV(neigh, parameters)
+grid_neigh.fit(X_train_norm, y_train) 
+Y_pred=grid_neigh.predict(X_test_norm)
+accuracy=grid_neigh.score(X_test_norm,y_test)
+Performance_Metrics(y_test,Y_pred)
+```
+
+PERFORMANCE METRICS:
+
+- Accuracy: 79.09625275532697
+- F1 score: 77.77472215062097
+- Recall: 79.09625275532697
+- Precision: 79.46170751427233
+
+## Random Forest Classifier
+```{python}
+#| echo: true
+#| eval: false
+#| code-fold: true
+# Number of trees in random forest
+n_estimators = [int(x) for x in np.linspace(start = 4, stop = 100, num = 5)]
+# Number of features to consider at every split
+max_features = ['auto', 'sqrt']
+# Maximum number of levels in tree
+max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+max_depth.append(None)
+# Minimum number of samples required to split a node
+min_samples_split = [2, 3,6,7,5]
+# Minimum number of samples required at each leaf node
+min_samples_leaf = [1, 2, 3 , 4]
+# Method of selecting samples for training each tree
+bootstrap = [True, False]
+# Create the random grid
+RF_grid = {'n_estimators': n_estimators,
+               'max_features': max_features,
+               'max_depth': max_depth,
+               'min_samples_split': min_samples_split,
+               'min_samples_leaf': min_samples_leaf,
+               'bootstrap': bootstrap}
+
+crf= RandomForestClassifier()
+parameter_tuning(crf, RF_grid, X_train_norm, y_train ,X_test_norm,y_test)
+```
+PERFORMANCE METRICS
+
+- Accuracy: 81.05253490080823
+- F1 score: 80.48892035690088
+- Recall: 81.05253490080823
+- Precision: 80.20424477501095
+
+# Conclusion
+- We have used Music Genre Classfication to make a classification model. 
+- We have imputed the data using the mean of each column.
+- We have define extra features.
+- We see great improvment in accuracy after balancing the dataset using SMOTE.
+- The accuracy of all algorthims are close, but random forest classifier shows the highest accuracy. 
+
+# Thank You for Listening  
+- Any Question ?
