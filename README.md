@@ -3,9 +3,9 @@ Assignment: Group Assignment #3 - Musicians [Machine Learning]
 
 [Report]() (offline)
 
-[Slides]() (offline)
+[Slides]("./report/slides.html#/title-slides") 
 
-[Codebook]() (offline)
+[Codebook](./src/Codebook.ipynb) (offline)
 
 ## **Dataset**
 
