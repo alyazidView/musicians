@@ -3,7 +3,7 @@ Assignment: Group Assignment #3 - Musicians [Machine Learning]
 
 [Report]() (offline)
 
-[Slides]("./report/slides.html#/title-slides") 
+[Slides](https://alyazidview.github.io/musicians/report/slides.html#/title-slides) 
 
 [Codebook](./src/Codebook.ipynb) (offline)
 
