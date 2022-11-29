@@ -45,6 +45,9 @@ author:
 |Acousticness|Instrumentalness|duration in ms|
 |liveness|valence|tempo|
 
+
+
+
 # Reading the Data:{.smaller}
 ```{python}
 def warn(*args, **kwargs):
@@ -89,6 +92,21 @@ raw_data.info()
 - The data has 17996 rows, and 17 columns
 - Artist Name, and Track Name are of type str, while the rest are numerical variables.
 - Although Class is a continous variable, it should be treated as Categorical.
+
+# Reading the Data
+|Label|Class|
+|:--:|:--:|
+|0|Acoustic/Folk|
+|1|Alt_Music|
+|2|Blues|
+|3|Bollywood|
+|4|Country|
+|5|Hiphop|
+|6|Indie Alt|
+|7|Instrumental|
+|8|Metal|
+|9|Pop|
+|10|Rock|
 
 # Data Imputing:{.smaller}
 - Lets see the missing values.
