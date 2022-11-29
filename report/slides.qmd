@@ -3,6 +3,7 @@ title: "Music Genre Classification"
 format: 
     revealjs: 
         theme: serif
+jupyter: python3
 excute:
     echo: false
     eval: true
@@ -78,10 +79,10 @@ raw_data = pd.read_csv('../data/train.csv')
 
 - Here a sample of the dataset
 ```{python}
-raw_data.head(3)
+raw_data.head(2)
 ```
 
-
+# Reading the Data:{.smaller}
 ```{python}
 raw_data.info()
 ```
