@@ -93,8 +93,8 @@ raw_data.info()
 - Artist Name, and Track Name are of type str, while the rest are numerical variables.
 - Although Class is a continous variable, it should be treated as Categorical.
 
-# Reading the Data
-|Label|Class|
+# Reading the Data :{.smaller}
+|Label|Class/Genre|
 |:--:|:--:|
 |0|Acoustic/Folk|
 |1|Alt_Music|
@@ -178,8 +178,6 @@ X_train_norm,X_test_norm=scale_features(X_train, X_test)
 
 # Model Training
 
-- Model training without over sampling.
-- Model training with over sampling.
 
 ## Models used:
 - LightGBM.
@@ -189,8 +187,19 @@ X_train_norm,X_test_norm=scale_features(X_train, X_test)
 - Random Forest.
 - Support Vector Machine.
 
-## Model Training (w/o over sampling)
+## Model Training 
+```{python}
+#| code-fold: true
+#| echo: true
+#| eval: false
 
+for clf, title in zip(classifiers, titles):
+  clf.fit(X_train_norm, y_train)
+  prediction = clf.predict(X_test_norm)
+  #Performance_Metrics(y_test,prediction)
+  print(title + " Accuracy Score:", round(clf.score(X_test_norm, y_test), 2))
+
+```
 - LGBM Accuracy Score: **0.59**
 - Logistic Regression Accuracy Score: **0.53**
 - K-Nearest Neighbor Accuracy Score: **0.46**
@@ -198,44 +207,6 @@ X_train_norm,X_test_norm=scale_features(X_train, X_test)
 - Random Forest Accuracy Score: **0.56**
 - Support Vector Machine Accuracy Score: **0.57**
 
-## Model Training (with over sampling):{.smaller}
-
-- Class distribution.
-```{python}
-fig = px.histogram(
-    df, 
-    x='Class',
-    title="Class Distribution",
-    template="ggplot2",
-)
-fig.update_layout(yaxis_title="Count")
-fig.show()
-```
-
-## Model Training (with over sampling) SMOTE:
-- To balance the dataset, we will use SMOTE technique 
-
-```{python}
-#| echo: true
-#| eval: false
-X = df.drop('Class', axis=1)
-y = df[['Class']]
-X_train_norm,X_test_norm=scale_features(X_train, X_test)
-
-oversample = SMOTE()
-X_over, y_over = oversample.fit_resample(X, y)
-
-X_train, X_test, y_train, y_test = train_test_split(X_over , y_over ,
-test_size=0.2, random_state=42, shuffle=True )
-```
-## Model Training (with over sampling)
-
-- LGBM Accuracy Score: **0.8**
-- Logistic Regression Accuracy Score: **0.65**
-- K-Nearest Neighbor Accuracy Score: **0.75**
-- Multi-Layer-Perceptron Accuracy Score: **0.74**
-- Random Forest Accuracy Score: **0.8**
-- Support Vector Machine Accuracy Score: **0.74**
 
 # Hyperparameter Tuning:{.smaller}
 - Define tuning function:
@@ -280,10 +251,10 @@ parameter_tuning(lg, lg_param_test, X_train_norm, y_train ,X_test_norm,y_test)
 ```
 PERFORMANCE METRICS:
 
-- Accuracy: 79.13299044819986
-- F1 score: 78.66740817965271
-- Recall: 79.13299044819986
-- Precision: 78.52104237245331
+- Accuracy: 60.28006223605246
+- F1 score: 58.03704642813935
+- Recall: 60.28006223605246
+- Precision: 57.92901708664301
 
 
 ## SVM:{.smaller}
@@ -300,10 +271,10 @@ parameter_tuning(svm_model , svm_param_grid, X_train_norm, y_train ,X_test_norm,
 
 PERFORMANCE METRICS:
 
-- Accuracy: 80.18001469507715
-- F1 score: 79.8720837760752
-- Recall: 80.18001469507715
-- Precision: 79.79445417200164
+- Accuracy: 53.10068904200933
+- F1 score: 49.95614233597788
+- Recall: 53.10068904200933
+- Precision: 49.544982761408015
 
 
 ## KNN:{.smaller}
@@ -322,10 +293,10 @@ Performance_Metrics(y_test,Y_pred)
 
 PERFORMANCE METRICS:
 
-- Accuracy: 79.09625275532697
-- F1 score: 77.77472215062097
-- Recall: 79.09625275532697
-- Precision: 79.46170751427233
+- Accuracy: 54.012002667259395
+- F1 score: 52.37616507674674
+- Recall: 54.012002667259395
+- Precision: 52.17856189465272
 
 ## Random Forest Classifier
 ```{python}
@@ -358,17 +329,16 @@ parameter_tuning(crf, RF_grid, X_train_norm, y_train ,X_test_norm,y_test)
 ```
 PERFORMANCE METRICS
 
-- Accuracy: 81.05253490080823
-- F1 score: 80.48892035690088
-- Recall: 81.05253490080823
-- Precision: 80.20424477501095
+- Accuracy: 56.70148921982663
+- F1 score: 55.30161935799549
+- Recall: 56.70148921982663
+- Precision: 54.77966484292425
 
 # Conclusion
-- We have used Music Genre Classfication to make a classification model. 
+- We have used Music Genre Classfication dataset to make a classification model. 
 - We have imputed the data using the mean of each column.
 - We have define extra features.
-- We see great improvment in accuracy after balancing the dataset using SMOTE.
-- The accuracy of all algorthims are close, but random forest classifier shows the highest accuracy. 
+- The accuracy of all algorthims are clos, except KNN. But LGBM shows the highest accuracy. 
 
 # Thank You for Listening  
 - Any Question ?
