@@ -1,11 +1,11 @@
 # **Misk Data Science Immersive**
 Assignment: Group Assignment #3 - Musicians [Machine Learning]
 
-[Report]() (offline)
+[Report](https://alyazidview.github.io/musicians/report/report.html)
 
 [Slides](https://alyazidview.github.io/musicians/report/slides.html#/title-slides) 
 
-[Codebook](./src/Codebook.ipynb) (offline)
+[Codebook](./src/Codebook.ipynb) 
 
 ## **Dataset**
 
