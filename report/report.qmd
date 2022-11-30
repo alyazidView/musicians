@@ -1,0 +1,17 @@
+---
+title: Music Genre Classification
+format:
+    html:
+        code-fold: true
+jupyter: python3
+author: 
+- Alyazid Alhumaydani
+- Razan Sendi
+- Qusea Saif
+- Ibrahim Alghrabi
+---
+
+# Introduction
+
+# About the Dataset
+
