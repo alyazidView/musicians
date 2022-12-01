@@ -44,7 +44,7 @@ author:
 |Loudness|Mode|Speechiness|
 |Acousticness|Instrumentalness|duration in ms|
 |liveness|valence|tempo|
-
+|Class|
 
 
 
@@ -78,6 +78,8 @@ from lightgbm import LGBMClassifier
 from scipy.stats import randint as sp_randint
 from scipy.stats import uniform as sp_uniform
 raw_data = pd.read_csv('../data/train.csv')
+df = raw_data
+
 ```
 
 - Here a sample of the dataset
@@ -108,6 +110,17 @@ raw_data.info()
 |9|Pop|
 |10|Rock|
 
+# Class Distribution
+```{python}
+fig = px.histogram(
+    df, 
+    x='Class',
+    title="Class Distribution",
+    template="ggplot2",
+)
+fig.update_layout(yaxis_title="Count")
+fig.show()
+```
 # Data Imputing:{.smaller}
 - Lets see the missing values.
 ```{python}
@@ -187,9 +200,8 @@ X_train_norm,X_test_norm=scale_features(X_train, X_test)
 - Random Forest.
 - Support Vector Machine.
 
-## Model Training 
+## Model Training {.smaller}
 ```{python}
-#| code-fold: true
 #| echo: true
 #| eval: false
 
@@ -337,8 +349,8 @@ PERFORMANCE METRICS
 # Conclusion
 - We have used Music Genre Classfication dataset to make a classification model. 
 - We have imputed the data using the mean of each column.
-- We have define extra features.
-- The accuracy of all algorthims are clos, except KNN. But LGBM shows the highest accuracy. 
+- We added some additional features.
+- The accuracy of all algorthims are close, except KNN. But LGBM shows the highest accuracy of 60 %. 
 
 # Thank You for Listening  
 - Any Question ?
